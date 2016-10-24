@@ -16,6 +16,7 @@ component! {
         let list = try!(list.get_files());
         for i in 0..list.len()
         {
+            println!("current file: {:?} of {:?}", i, list.len());
             let mut new_ip = IP::new();
             {
                 let mut ip = new_ip.init_root::<path::Builder>();

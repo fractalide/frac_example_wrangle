@@ -15,6 +15,7 @@ component! {
     fn run(&mut self) -> Result<()> {
         for ins in try!(self.ports.get_input_selections("input"))
         {
+            println!("Chunk completed!");
             let mut ip = try!(self.ports.recv_array("input", &ins));
             let chunk_reader: list_triple::Reader = try!(ip.get_root());
             let input_triple = try!(chunk_reader.get_triples());
