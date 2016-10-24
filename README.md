@@ -4,7 +4,7 @@ Example on how do to a bunch of file processing using Fractalide
 
 ### Build Instructions
 
-Make sure you have installed [`nix`](http://nixos.org/nix/), most likely your package manage has `nix` available, if not you'll need to compile from source.
+Make sure you have installed [`nix`](http://nixos.org/nix/), most likely your package manager has `nix` available, if not you'll need to compile from source.
 
 Nix is the only direct dependency you have to install "manually", basically it's a make replacement.
 

@@ -4,9 +4,9 @@
   , contracts ? fractalide.contracts
   , components ? fractalide.components}:
 let
-  ### change these two expressions
+  ### change only these two expressions
   publicComponentOrSubnet = allComponents.example_wrangle; # expose your public reusable subnet
-  exeSubnet = allComponents.example_wrangle; # a subnet containing non-generic IIPs you don't want to expose to the community
+  exeSubnet = allComponents.example_wrangle; # a top level subnet containing non-generic IIPs you don't want to expose to the community
   allContracts = contracts // import ./contracts {inherit pkgs support allContracts;};
   allComponents = components // import ./components {inherit pkgs support allContracts allComponents;};
 in
