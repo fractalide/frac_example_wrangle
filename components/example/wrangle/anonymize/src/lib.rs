@@ -14,7 +14,7 @@ component! {
     acc(),
     fn run(&mut self) -> Result<()> {
         let mut ip = try!(self.ports.recv("input"));
-        let anon_reader: list_triple::Reader = try!(ip.get_root());
+        let anon_reader: list_triple::Reader = try!(ip.read_contract());
         let to_anon_triple = try!(anon_reader.get_triples());
 
         let mut anonymized_bean_counter = HashMap::new();
@@ -29,7 +29,7 @@ component! {
         }
         let mut fin_ip = IP::new();
         {
-            let ip = fin_ip.init_root::<list_triple::Builder>();
+            let ip = fin_ip.build_contract::<list_triple::Builder>();
             let mut fin_triple = ip.init_triples(anonymized_bean_counter.len() as u32);
             let mut i :u32 = 0;
             for (key,val) in anonymized_bean_counter.iter() {

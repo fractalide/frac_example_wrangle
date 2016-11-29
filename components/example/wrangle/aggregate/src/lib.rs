@@ -17,18 +17,18 @@ component! {
         {
             println!("Chunk completed!");
             let mut ip = try!(self.ports.recv_array("input", &ins));
-            let chunk_reader: list_triple::Reader = try!(ip.get_root());
+            let chunk_reader: list_triple::Reader = try!(ip.read_contract());
             let input_triple = try!(chunk_reader.get_triples());
 
             let mut ip_acc = try!(self.ports.recv("acc"));
-            let acc_reader: list_triple::Reader = try!(ip_acc.get_root());
+            let acc_reader: list_triple::Reader = try!(ip_acc.read_contract());
             let acc_triple = try!(acc_reader.get_triples());
             let acc_length = acc_triple.len() as u32;
             let input_length = input_triple.len() as u32;
 
             let mut new_acc_ip = IP::new();
             {
-                let ip = new_acc_ip.init_root::<list_triple::Builder>();
+                let ip = new_acc_ip.build_contract::<list_triple::Builder>();
                 let mut new_acc_triple = ip.init_triples(acc_length + input_length);
                 let first = try!(input_triple.get(0).get_first());
                 let mut i :u32 = 0;
@@ -51,7 +51,7 @@ component! {
         }
 
         let mut ip_acc = try!(self.ports.recv("acc"));
-        let acc_reader: list_triple::Reader = try!(ip_acc.get_root());
+        let acc_reader: list_triple::Reader = try!(ip_acc.read_contract());
         let acc_triple = try!(acc_reader.get_triples());
 
         let mut large_sized_bean_counter = HashMap::new();
@@ -62,7 +62,7 @@ component! {
 
         let mut fin_ip = IP::new();
         {
-            let ip = fin_ip.init_root::<list_triple::Builder>();
+            let ip = fin_ip.build_contract::<list_triple::Builder>();
             let mut fin_triple = ip.init_triples(large_sized_bean_counter.len() as u32);
             let first = try!(acc_triple.get(0).get_first());
             let mut i :u32 = 0;

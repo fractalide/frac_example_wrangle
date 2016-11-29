@@ -4,7 +4,7 @@ extern crate capnp;
 
 fn print_data(mut ip: rustfbp::ports::IP)  -> Result<(String,String,String,String)>
 {
-    let data: quadruple::Reader = try!(ip.get_root());
+    let data: quadruple::Reader = try!(ip.read_contract());
     let min = data.get_first().to_string();
     let max =  data.get_second().to_string();
     let average =  data.get_third().to_string();

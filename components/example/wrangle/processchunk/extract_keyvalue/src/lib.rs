@@ -12,10 +12,10 @@ component! {
     acc(),
     fn run(&mut self) -> Result<()> {
         let mut opt = self.recv_option();
-        let extract_key: value_string::Reader = try!(opt.get_root());
+        let extract_key: value_string::Reader = try!(opt.read_contract());
 
         let mut ip = try!(self.ports.recv("input"));
-        let list_tuple: list_tuple::Reader = try!(ip.get_root());
+        let list_tuple: list_tuple::Reader = try!(ip.read_contract());
         let list_tuple = try!(list_tuple.get_tuples());
 
         if try!(list_tuple.get(0).get_first()) != "end" {
@@ -32,7 +32,7 @@ component! {
             }
             let mut new_ip = IP::new();
             {
-                let ip = new_ip.init_root::<list_triple::Builder>();
+                let ip = new_ip.build_contract::<list_triple::Builder>();
                 let mut triples = ip.init_triples(small_sized_bean_counter.len() as u32);
                 let mut i: u32 = 0;
                 for (key, val) in small_sized_bean_counter.iter() {
@@ -46,7 +46,7 @@ component! {
         } else {
             let mut end_ip = IP::new();
             {
-                let ip = end_ip.init_root::<list_triple::Builder>();
+                let ip = end_ip.build_contract::<list_triple::Builder>();
                 let mut triples = ip.init_triples(1);
                 triples.borrow().get(0).set_first("end");
             }

@@ -15,15 +15,15 @@ component! {
     fn run(&mut self) -> Result<()> {
         loop{
             let mut ip = try!(self.ports.recv("input"));
-            let input_triple: list_triple::Reader = try!(ip.get_root());
+            let input_triple: list_triple::Reader = try!(ip.read_contract());
             let input_triple = try!(input_triple.get_triples());
             if try!(input_triple.get(0).get_first()) == "end" {
                 let mut ip_acc = try!(self.ports.recv("acc"));
-                let acc_reader: list_triple::Reader = try!(ip_acc.get_root());
+                let acc_reader: list_triple::Reader = try!(ip_acc.read_contract());
                 let acc_triple = try!(acc_reader.get_triples());
                 let mut feedback_ip = IP::new();
                 {
-                    let ip = feedback_ip.init_root::<list_triple::Builder>();
+                    let ip = feedback_ip.build_contract::<list_triple::Builder>();
                     let mut feedback_list = ip.init_triples(acc_triple.len() as u32);
                     let first = try!(acc_triple.get(0).get_first());
                     for i in 0..feedback_list.len() {
@@ -36,14 +36,14 @@ component! {
                 break;
             } else {
                 let mut ip_acc = try!(self.ports.recv("acc"));
-                let acc_reader: list_triple::Reader = try!(ip_acc.get_root());
+                let acc_reader: list_triple::Reader = try!(ip_acc.read_contract());
                 let acc_triple = try!(acc_reader.get_triples());
                 let acc_length = acc_triple.len() as u32;
                 let input_length = input_triple.len() as u32;
                 if acc_length == 0 {
                     let mut acc_ip = IP::new();
                     {
-                        let ip = acc_ip.init_root::<list_triple::Builder>();
+                        let ip = acc_ip.build_contract::<list_triple::Builder>();
                         let mut acc_triple = ip.init_triples(input_length);
                         for i in 0..input_triple.len() {
                             acc_triple.borrow().get(i).set_first(try!(input_triple.get(i).get_first()));
@@ -78,7 +78,7 @@ component! {
                     }
                     let mut new_acc_ip = IP::new();
                     {
-                        let ip = new_acc_ip.init_root::<list_triple::Builder>();
+                        let ip = new_acc_ip.build_contract::<list_triple::Builder>();
                         let mut new_acc_triple = ip.init_triples(medium_sized_bean_counter.len() as u32);
                         let first = try!(acc_triple.get(0).get_first());
                         let mut i :u32 = 0;
@@ -94,7 +94,7 @@ component! {
             }
             let mut next_ip = IP::new();
             {
-                let mut ip = next_ip.init_root::<value_string::Builder>();
+                let mut ip = next_ip.build_contract::<value_string::Builder>();
                 ip.set_value("next");
             }
             try!(self.ports.send("next", next_ip));

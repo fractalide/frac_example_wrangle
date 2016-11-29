@@ -12,14 +12,14 @@ component! {
     acc(),
     fn run(&mut self) -> Result<()> {
         let mut ip = try!(self.ports.recv("input"));
-        let list: file_list::Reader = try!(ip.get_root());
+        let list: file_list::Reader = try!(ip.read_contract());
         let list = try!(list.get_files());
         for i in 0..list.len()
         {
             println!("current file: {:?} of {:?}", i, list.len());
             let mut new_ip = IP::new();
             {
-                let mut ip = new_ip.init_root::<path::Builder>();
+                let mut ip = new_ip.build_contract::<path::Builder>();
                 ip.set_path(try!(list.get(i)));
             }
             try!(self.ports.send("output", new_ip));
@@ -28,7 +28,7 @@ component! {
 
         let mut end_ip = IP::new();
         {
-            let mut ip = end_ip.init_root::<path::Builder>();
+            let mut ip = end_ip.build_contract::<path::Builder>();
             ip.set_path("end");
         }
         try!(self.ports.send("output", end_ip));

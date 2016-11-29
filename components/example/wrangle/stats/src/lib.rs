@@ -9,7 +9,7 @@ use std::str::FromStr;
 
 fn process_data(mut ip: rustfbp::ports::IP) -> Result<(u32,u32,u32,f32)>
 {
-    let data_reader: list_triple::Reader = try!(ip.get_root());
+    let data_reader: list_triple::Reader = try!(ip.read_contract());
     let data = try!(data_reader.get_triples());
     let stats_length = data.len();
     let mut total :u32 = 0;
@@ -47,7 +47,7 @@ component! {
         let (min, max, average, median): (u32, u32, u32, f32) = try!(process_data(try!(self.ports.recv("raw"))));
         let mut raw_ip = IP::new();
         {
-            let mut quad = raw_ip.init_root::<quadruple::Builder>();
+            let mut quad = raw_ip.build_contract::<quadruple::Builder>();
             quad.set_first(min);
             quad.set_second(max);
             quad.set_third(average);
@@ -58,7 +58,7 @@ component! {
         let (min, max, average, median): (u32, u32, u32, f32) = try!(process_data(try!(self.ports.recv("anonymous"))));
         let mut anonymous_ip = IP::new();
         {
-            let mut quad = anonymous_ip.init_root::<quadruple::Builder>();
+            let mut quad = anonymous_ip.build_contract::<quadruple::Builder>();
             quad.set_first(min);
             quad.set_second(max);
             quad.set_third(average);

@@ -25,7 +25,7 @@ component! {
     acc(),
     fn run(&mut self) -> Result<()> {
         let mut ip = try!(self.ports.recv("input"));
-        let value: value_string::Reader = try!(ip.get_root());
+        let value: value_string::Reader = try!(ip.read_contract());
         let value = try!(value.get_value());
         if value != "end" {
             if value.contains("type") {
@@ -33,7 +33,7 @@ component! {
                 let purchases = Purchases {purchases:  purchases.purchases};
                 let mut new_ip = IP::new();
                 {
-                    let ip = new_ip.init_root::<list_tuple::Builder>();
+                    let ip = new_ip.build_contract::<list_tuple::Builder>();
                     let mut tuples = ip.init_tuples(purchases.purchases.len() as u32);
                     let mut i: u32 = 0;
                     for tuple in &purchases.purchases {
@@ -46,7 +46,7 @@ component! {
             }else {
                 let mut empty_ip = IP::new();
                 {
-                    let ip = empty_ip.init_root::<list_tuple::Builder>();
+                    let ip = empty_ip.build_contract::<list_tuple::Builder>();
                     let mut tuples = ip.init_tuples(1);
                     tuples.borrow().get(0).set_first("zero");
                     tuples.borrow().get(0).set_second("0");
@@ -56,7 +56,7 @@ component! {
         } else {
             let mut end_ip = IP::new();
             {
-                let ip = end_ip.init_root::<list_tuple::Builder>();
+                let ip = end_ip.build_contract::<list_tuple::Builder>();
                 let mut tuples = ip.init_tuples(1);
                 tuples.borrow().get(0).set_first("end");
             }
