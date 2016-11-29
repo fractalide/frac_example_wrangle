@@ -1,29 +1,13 @@
-{ # nixpkgs attributes
-  stdenv, buildFractalideSubnet, upkeepers
-  , fetchurl , unzip
-  # upstream components
-  , fs_dir_list
-  , ip_clone
-  , dt_vector_split_by_outarr_count
-  # component from this repo
-  , example_wrangle_processchunk
-  , example_wrangle_aggregate
-  , example_wrangle_anonymize
-  , example_wrangle_stats
-  , example_wrangle_print
-  # upstream contracts
-  , list_triple
-  , path
-  ,...}:
+{ subnet, components, contracts, pkgs }:
 
   let
-  example-data = stdenv.mkDerivation rec {
+  example-data = pkgs.stdenv.mkDerivation rec {
     name = "example-data";
-    src = fetchurl {
+    src = pkgs.fetchurl {
       url = "https://gitlab.com/fractalide/example_data/repository/archive.zip?ref=master";
       sha256 = "133pya78qij3jp8r8a1klv6gvwhmqpa27nplvpf6297r2m427wsh";
     };
-    buildInputs = [ unzip ];
+    buildInputs = with pkgs; [ unzip ];
     buildCommand = ''
     mkdir -p $out
     unzip $src
@@ -31,9 +15,9 @@
     '';
   };
   in
-  buildFractalideSubnet rec {
-   src = ./.;
-   subnet = ''
+  subnet {
+    src = ./.;
+    flowscript = with components; with contracts; ''
    '${list_triple}:(triples = [])' -> acc aggr_triples(${example_wrangle_aggregate})
 
    '${path}:(path="${example-data}/data")' ->
@@ -52,13 +36,6 @@
     raw stats() raw ->
     raw print()
    '';
-
-   meta = with stdenv.lib; {
-    description = "Subnet: Demonstrate processing some 10000 JSON files";
-    homepage = https://github.com/fractalide/fractalide/tree/master/components/example/wrangle;
-    license = with licenses; [ mpl20 ];
-    maintainers = with upkeepers; [ sjmackenzie];
-  };
 }
 
 /*split() output[3] -> input procchunk3(${example_wrangle_processchunk}) output -> input[3] aggr_triples()

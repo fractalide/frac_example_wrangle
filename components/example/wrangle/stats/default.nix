@@ -1,18 +1,9 @@
-{ stdenv, buildFractalideComponent, genName, upkeepers
-  , list_triple
-  , quadruple
-  , ...}:
+{ component, contracts, crates, pkgs }:
 
-buildFractalideComponent rec {
-  name = genName ./.;
+component {
   src = ./.;
-  contracts =  [ list_triple quadruple ];
+  contracts = with contracts; [ list_triple quadruple ];
+  crates = with crates; [];
+  osdeps = with pkgs; [];
   depsSha256 = "122a7zn3k4lvkrgxsdk7060jn26a6b14m5yw9chkkmhy8cnwskqk";
-
-  meta = with stdenv.lib; {
-    description = "Component: Print average, mean, min and max to the terminal";
-    homepage = https://github.com/fractalide/fractalide/tree/master/components/example/wrangle/stats;
-    license = with licenses; [ mpl20 ];
-    maintainers = with upkeepers; [ dmichiels sjmackenzie];
-  };
 }

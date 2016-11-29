@@ -1,6 +1,7 @@
-{ pkgs, support, allContracts, allComponents, ... }:
+{ buffet }:
+
 let
-callPackage = pkgs.lib.callPackageWith (pkgs // support // allContracts // allComponents);
+callPackage = buffet.pkgs.lib.callPackageWith (buffet // buffet.support );
 self = rec {
   example_wrangle = callPackage ./example/wrangle {};
   example_wrangle_aggregate = callPackage ./example/wrangle/aggregate {};

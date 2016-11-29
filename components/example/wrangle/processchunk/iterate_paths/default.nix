@@ -1,19 +1,9 @@
-{ stdenv, buildFractalideComponent, genName, upkeepers
-  , file_list
-  , path
-  , value_string
-  , ...}:
+{ component, contracts, crates, pkgs }:
 
-buildFractalideComponent rec {
-  name = genName ./.;
+component {
   src = ./.;
-  contracts = [ file_list path value_string ];
+  contracts = with contracts; [ file_list path value_string ];
+  crates = with crates; [];
+  osdeps = with pkgs; [];
   depsSha256 = "07vkj7x98lgyywnjwybj7gqvqwj1jsqqygw6pwlakbh5k03cfsjp";
-
-  meta = with stdenv.lib; {
-    description = "Component: Iterate over a list of 1000 file paths";
-    homepage = https://github.com/fractalide/fractalide/tree/master/components/example/wrangler/iterate_paths;
-    license = with licenses; [ mpl20 ];
-    maintainers = with upkeepers; [ dmichiels sjmackenzie];
-  };
 }

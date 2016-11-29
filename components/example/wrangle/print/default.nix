@@ -1,17 +1,9 @@
-{ stdenv, buildFractalideComponent, genName, upkeepers
-  , quadruple
-  , ...}:
+{ component, contracts, crates, pkgs }:
 
-buildFractalideComponent rec {
-  name = genName ./.;
+component {
   src = ./.;
-  contracts = [ quadruple ];
+  contracts = with contracts; [ quadruple ];
+  crates = with crates; [];
+  osdeps = with pkgs; [];
   depsSha256 = "1b9in4cdmvd77skdv9sz0sm54g77fv6r0cyldgfbzj7lgd4aspwn";
-
-  meta = with stdenv.lib; {
-    description = "Component: Print raw unanonymized and anonymized statistics to the terminal";
-    homepage = https://github.com/fractalide/fractalide/tree/master/components/example/wrangle/print;
-    license = with licenses; [ mpl20 ];
-    maintainers = with upkeepers; [ dmichiels sjmackenzie];
-  };
 }

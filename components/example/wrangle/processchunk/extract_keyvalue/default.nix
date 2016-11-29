@@ -1,19 +1,9 @@
-{ stdenv, buildFractalideComponent, genName, upkeepers
-  , list_tuple
-  , list_triple
-  , value_string
-  , ...}:
+{ component, contracts, crates, pkgs }:
 
-buildFractalideComponent rec {
-  name = genName ./.;
+component {
   src = ./.;
-  contracts = [ list_tuple list_triple value_string];
+  contracts = with contracts; [ list_tuple list_triple value_string ];
+  crates = with crates; [];
+  osdeps = with pkgs; [];
   depsSha256 = "0c2d6l7wc9ga1lh601h7wk2x185fhfh19acn63qxn5rpybjjagsf";
-
-  meta = with stdenv.lib; {
-    description = "Component: Split a vector into multiple vectors, one for each element in the output array port";
-    homepage = https://github.com/fractalide/fractalide/tree/master/components/dt/vector/split/by/outarr/count;
-    license = with licenses; [ mpl20 ];
-    maintainers = with upkeepers; [ dmichiels sjmackenzie];
-  };
 }
