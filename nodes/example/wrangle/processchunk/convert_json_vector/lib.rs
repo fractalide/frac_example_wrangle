@@ -16,24 +16,19 @@ struct Purchases {
 }
 
 agent! {
-    example_wrangle_processchunk_convert_json_vector, edges(value_string, list_tuple)
-    inputs(input: value_string),
-    inputs_array(),
-    outputs(output: list_tuple),
-    outputs_array(),
-    option(),
-    acc(),
-    fn run(&mut self) -> Result<()> {
-        let mut ip = try!(self.ports.recv("input"));
-        let value: value_string::Reader = try!(ip.read_schema());
-        let value = try!(value.get_value());
+    input(input: value_string),
+    output(output: list_tuple),
+    fn run(&mut self) -> Result<Signal> {
+        let mut ip = self.input.input.recv()?;
+        let value: value_string::Reader = ip.read_schema()?;
+        let value = value.get_value()?;
         if value != "end" {
             if value.contains("type") {
                 let purchases: Purchases = json::decode(value.replace("type", "thetype").as_str()).unwrap();
                 let purchases = Purchases {purchases:  purchases.purchases};
-                let mut new_ip = IP::new();
+                let mut new_msg = Msg::new();
                 {
-                    let ip = new_ip.build_schema::<list_tuple::Builder>();
+                    let ip = new_msg.build_schema::<list_tuple::Builder>();
                     let mut tuples = ip.init_tuples(purchases.purchases.len() as u32);
                     let mut i: u32 = 0;
                     for tuple in &purchases.purchases {
@@ -42,26 +37,26 @@ agent! {
                         i += 1;
                     }
                 }
-                try!(self.ports.send("output", new_ip));
+                self.output.output.send(new_msg)?;
             }else {
-                let mut empty_ip = IP::new();
+                let mut empty_msg = Msg::new();
                 {
-                    let ip = empty_ip.build_schema::<list_tuple::Builder>();
+                    let ip = empty_msg.build_schema::<list_tuple::Builder>();
                     let mut tuples = ip.init_tuples(1);
                     tuples.borrow().get(0).set_first("zero");
                     tuples.borrow().get(0).set_second("0");
                 }
-                try!(self.ports.send("output", empty_ip));
+                self.output.output.send(empty_msg)?;
             }
         } else {
-            let mut end_ip = IP::new();
+            let mut end_ip = Msg::new();
             {
                 let ip = end_ip.build_schema::<list_tuple::Builder>();
                 let mut tuples = ip.init_tuples(1);
                 tuples.borrow().get(0).set_first("end");
             }
-            try!(self.ports.send("output", end_ip));
+            self.output.output.send(end_ip)?;
         }
-        Ok(())
+        Ok(End)
     }
 }

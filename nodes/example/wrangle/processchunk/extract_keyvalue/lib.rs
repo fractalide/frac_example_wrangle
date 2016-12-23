@@ -3,18 +3,14 @@ extern crate rustfbp;
 extern crate capnp;
 
 agent! {
-    example_wrangle_processchunk_extract_keyvalue, edges(list_tuple, value_string, list_triple)
-    inputs(input: list_tuple),
-    inputs_array(),
-    outputs(output: list_tuple),
-    outputs_array(),
+    input(input: list_tuple),
+    output(output: list_triple),
     option(value_string),
-    acc(),
-    fn run(&mut self) -> Result<()> {
+    fn run(&mut self) -> Result<Signal> {
         let mut opt = self.recv_option();
-        let extract_key: value_string::Reader = try!(opt.read_schema());
+        let extract_key: value_string::Reader = opt.read_schema()?;
 
-        let mut ip = try!(self.ports.recv("input"));
+        let mut ip = try!(self.input.input.recv());
         let list_tuple: list_tuple::Reader = try!(ip.read_schema());
         let list_tuple = try!(list_tuple.get_tuples());
 
@@ -30,9 +26,9 @@ agent! {
             if small_sized_bean_counter.len() == 0 {
                 small_sized_bean_counter.insert("0",0);
             }
-            let mut new_ip = IP::new();
+            let mut new_msg = Msg::new();
             {
-                let ip = new_ip.build_schema::<list_triple::Builder>();
+                let ip = new_msg.build_schema::<list_triple::Builder>();
                 let mut triples = ip.init_triples(small_sized_bean_counter.len() as u32);
                 let mut i: u32 = 0;
                 for (key, val) in small_sized_bean_counter.iter() {
@@ -42,16 +38,16 @@ agent! {
                     i += 1;
                 }
             }
-            try!(self.ports.send("output", new_ip));
+            self.output.output.send(new_msg)?;
         } else {
-            let mut end_ip = IP::new();
+            let mut end_msg = Msg::new();
             {
-                let ip = end_ip.build_schema::<list_triple::Builder>();
+                let ip = end_msg.build_schema::<list_triple::Builder>();
                 let mut triples = ip.init_triples(1);
                 triples.borrow().get(0).set_first("end");
             }
-            try!(self.ports.send("output", end_ip));
+            self.output.output.send(end_msg)?;
         }
-        Ok(())
+        Ok(End)
     }
 }

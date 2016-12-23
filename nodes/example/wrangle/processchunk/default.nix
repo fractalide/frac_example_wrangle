@@ -4,7 +4,7 @@ subgraph {
   src = ./.;
   flowscript = with nodes; with edges; ''
   '${value_string}:(value="airline")' -> option extract_kvs(${example_wrangle_processchunk_extract_keyvalue})
-  '${list_triple}:(triples = [])' -> acc aggregate_triples(${example_wrangle_processchunk_agg_chunk_triples})
+  '${list_triple}:(triples = [])' -> accumulator aggregate_triples(${example_wrangle_processchunk_agg_chunk_triples})
 
   input => input iterate_paths(${example_wrangle_processchunk_iterate_paths}) output ->
     input open_file(${example_wrangle_processchunk_file_open}) output ->

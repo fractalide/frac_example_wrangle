@@ -5,16 +5,11 @@ extern crate capnp;
 use std::str::FromStr;
 
 agent! {
-    example_wrangle_anonymize, edges(list_triple)
-    inputs(input: list_triple),
-    inputs_array(),
-    outputs(output: list_triple),
-    outputs_array(),
-    option(),
-    acc(),
-    fn run(&mut self) -> Result<()> {
-        let mut ip = try!(self.ports.recv("input"));
-        let anon_reader: list_triple::Reader = try!(ip.read_schema());
+    input(input: list_triple),
+    output(output: list_triple),
+    fn run(&mut self) -> Result<Signal> {
+        let mut msg = try!(self.input.input.recv());
+        let anon_reader: list_triple::Reader = try!(msg.read_schema());
         let to_anon_triple = try!(anon_reader.get_triples());
 
         let mut anonymized_bean_counter = HashMap::new();
@@ -27,9 +22,9 @@ agent! {
             }
             anonymized_bean_counter.insert(second, third);
         }
-        let mut fin_ip = IP::new();
+        let mut fin_msg = Msg::new();
         {
-            let ip = fin_ip.build_schema::<list_triple::Builder>();
+            let ip = fin_msg.build_schema::<list_triple::Builder>();
             let mut fin_triple = ip.init_triples(anonymized_bean_counter.len() as u32);
             let mut i :u32 = 0;
             for (key,val) in anonymized_bean_counter.iter() {
@@ -39,7 +34,7 @@ agent! {
                 i += 1;
             }
         }
-        try!(self.ports.send("output", fin_ip));
-        Ok(())
+        try!(self.output.output.send(fin_msg));
+        Ok(End)
     }
 }
