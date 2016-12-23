@@ -28,7 +28,7 @@
    split() output[2] -> input procchunk2(${example_wrangle_processchunk}) output -> input[2] aggr_triples()
 
    aggr_triples() output ->
-   input clone(${ip_clone}) clone[anonymous] ->
+   input clone(${msg_clone}) clone[anonymous] ->
     input anonymize(${example_wrangle_anonymize}) output ->
     anonymous stats(${example_wrangle_stats}) anonymous ->
     anonymous print(${example_wrangle_print})
