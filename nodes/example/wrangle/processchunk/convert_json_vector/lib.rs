@@ -17,7 +17,7 @@ struct Purchases {
 
 agent! {
     input(input: value_string),
-    output(output: list_tuple),
+    output(output: list_ntuple_tuple_tt),
     fn run(&mut self) -> Result<Signal> {
         let mut ip = self.input.input.recv()?;
         let value: value_string::Reader = ip.read_schema()?;
@@ -28,12 +28,12 @@ agent! {
                 let purchases = Purchases {purchases:  purchases.purchases};
                 let mut new_msg = Msg::new();
                 {
-                    let ip = new_msg.build_schema::<list_tuple::Builder>();
-                    let mut tuples = ip.init_tuples(purchases.purchases.len() as u32);
+                    let ip = new_msg.build_schema::<list_ntuple_tuple_tt::Builder>();
+                    let mut tuples = ip.init_list(purchases.purchases.len() as u32);
                     let mut i: u32 = 0;
                     for tuple in &purchases.purchases {
-                        tuples.borrow().get(i).set_first(tuple.thetype.as_str());
-                        tuples.borrow().get(i).set_second(format!("{}",tuple.amount).as_str());
+                        tuples.borrow().get(i).get_first()?.set_text(tuple.thetype.as_str());
+                        tuples.borrow().get(i).get_second()?.set_text(format!("{}",tuple.amount).as_str());
                         i += 1;
                     }
                 }
@@ -41,19 +41,19 @@ agent! {
             }else {
                 let mut empty_msg = Msg::new();
                 {
-                    let ip = empty_msg.build_schema::<list_tuple::Builder>();
-                    let mut tuples = ip.init_tuples(1);
-                    tuples.borrow().get(0).set_first("zero");
-                    tuples.borrow().get(0).set_second("0");
+                    let ip = empty_msg.build_schema::<list_ntuple_tuple_tt::Builder>();
+                    let mut tuples = ip.init_list(1);
+                    tuples.borrow().get(0).get_first()?.set_text("zero");
+                    tuples.borrow().get(0).get_second()?.set_text("0");
                 }
                 self.output.output.send(empty_msg)?;
             }
         } else {
             let mut end_ip = Msg::new();
             {
-                let ip = end_ip.build_schema::<list_tuple::Builder>();
-                let mut tuples = ip.init_tuples(1);
-                tuples.borrow().get(0).set_first("end");
+                let ip = end_ip.build_schema::<list_ntuple_tuple_tt::Builder>();
+                let mut tuples = ip.init_list(1);
+                tuples.borrow().get(0).get_first()?.set_text("end");
             }
             self.output.output.send(end_ip)?;
         }

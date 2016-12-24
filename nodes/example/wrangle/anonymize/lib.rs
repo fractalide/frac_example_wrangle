@@ -5,18 +5,18 @@ extern crate capnp;
 use std::str::FromStr;
 
 agent! {
-    input(input: list_triple),
-    output(output: list_triple),
+    input(input: list_ntuple_triple_ttt),
+    output(output: list_ntuple_triple_ttt),
     fn run(&mut self) -> Result<Signal> {
         let mut msg = try!(self.input.input.recv());
-        let anon_reader: list_triple::Reader = try!(msg.read_schema());
-        let to_anon_triple = try!(anon_reader.get_triples());
+        let anon_reader: list_ntuple_triple_ttt::Reader = try!(msg.read_schema());
+        let to_anon_triple = try!(anon_reader.get_list());
 
         let mut anonymized_bean_counter = HashMap::new();
-        let first = try!(to_anon_triple.get(0).get_first());
+        let first = to_anon_triple.get(0).get_first()?.get_text()?;
         for i in 0..to_anon_triple.len() {
-            let second = try!(to_anon_triple.get(i).get_second());
-            let third = try!(to_anon_triple.get(i).get_third());
+            let second = to_anon_triple.get(i).get_second()?.get_text()?;
+            let third = to_anon_triple.get(i).get_third()?.get_text()?;
             if i32::from_str(third).unwrap() < 6 {
                 continue;
             }
@@ -24,13 +24,13 @@ agent! {
         }
         let mut fin_msg = Msg::new();
         {
-            let ip = fin_msg.build_schema::<list_triple::Builder>();
-            let mut fin_triple = ip.init_triples(anonymized_bean_counter.len() as u32);
+            let ip = fin_msg.build_schema::<list_ntuple_triple_ttt::Builder>();
+            let mut fin_triple = ip.init_list(anonymized_bean_counter.len() as u32);
             let mut i :u32 = 0;
             for (key,val) in anonymized_bean_counter.iter() {
-                fin_triple.borrow().get(i).set_first(first);
-                fin_triple.borrow().get(i).set_second(key);
-                fin_triple.borrow().get(i).set_third(format!("{}",val).as_str());
+                fin_triple.borrow().get(i).get_first()?.set_text(first);
+                fin_triple.borrow().get(i).get_second()?.set_text(key);
+                fin_triple.borrow().get(i).get_third()?.set_text(format!("{}",val).as_str());
                 i += 1;
             }
         }

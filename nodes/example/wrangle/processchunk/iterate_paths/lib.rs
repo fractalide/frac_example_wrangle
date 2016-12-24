@@ -3,7 +3,7 @@ extern crate rustfbp;
 extern crate capnp;
 
 agent! {
-    input(input: file_list, next: value_string),
+    input(input: file_list, next: prim_text),
     output(output: path),
     fn run(&mut self) -> Result<Signal> {
         let mut msg = self.input.input.recv()?;

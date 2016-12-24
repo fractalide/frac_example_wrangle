@@ -2,7 +2,7 @@
 
 agent {
   src = ./.;
-  edges = with edges; [ value_string list_tuple ];
+  edges = with edges; [ value_string list_ntuple_tuple_tt ];
   crates = with crates; [ rustfbp capnp rustc-serialize ];
   osdeps = with pkgs; [];
 }

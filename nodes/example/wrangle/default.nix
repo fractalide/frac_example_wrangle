@@ -18,7 +18,7 @@
   subgraph {
     src = ./.;
     flowscript = with nodes; with edges; ''
-   '${list_triple}:(triples = [])' -> accumulator aggr_triples(${example_wrangle_aggregate})
+   '${list_ntuple_triple_ttt}:(list = [])' -> accumulator aggr_triples(${example_wrangle_aggregate})
 
    '${path}:(path="${example-data}/data")' ->
    input list_dir(${fs_dir_list}) output ->

@@ -9,13 +9,13 @@ use std::str::FromStr;
 
 fn process_data(mut msg: rustfbp::ports::Msg) -> Result<(u32,u32,u32,f32)>
 {
-    let data_reader: list_triple::Reader = try!(msg.read_schema());
-    let data = try!(data_reader.get_triples());
+    let data_reader: list_ntuple_triple_ttt::Reader = msg.read_schema()?;
+    let data = data_reader.get_list()?;
     let stats_length = data.len();
     let mut total :u32 = 0;
     let mut stats = BTreeSet::new();
     for i in 0..data.len() {
-        let second = u32::from_str(try!(data.get(i).get_second())).unwrap();
+        let second = u32::from_str(data.get(i).get_second()?.get_text()?).unwrap();
         stats.insert(second);
         total += second;
     }
@@ -36,30 +36,30 @@ fn process_data(mut msg: rustfbp::ports::Msg) -> Result<(u32,u32,u32,f32)>
 }
 
 agent! {
-    input(raw: list_triple, anonymous: list_triple),
-    output(raw: quadruple, anonymous: quadruple),
+    input(raw: list_ntuple_triple_ttt, anonymous: list_ntuple_triple_ttt),
+    output(raw: ntuple_quadruple_u32u32u32f32, anonymous: ntuple_quadruple_u32u32u32f32),
     fn run(&mut self) -> Result<Signal> {
-        let (min, max, average, median): (u32, u32, u32, f32) = try!(process_data(try!(self.input.raw.recv())));
+        let (min, max, average, median): (u32, u32, u32, f32) = process_data(self.input.raw.recv()?)?;
         let mut raw_msg = Msg::new();
         {
-            let mut quad = raw_msg.build_schema::<quadruple::Builder>();
-            quad.set_first(min);
-            quad.set_second(max);
-            quad.set_third(average);
-            quad.set_fourth(median);
+            let mut quad = raw_msg.build_schema::<ntuple_quadruple_u32u32u32f32::Builder>();
+            quad.borrow().get_first()?.set_u32(min);
+            quad.borrow().get_second()?.set_u32(max);
+            quad.borrow().get_third()?.set_u32(average);
+            quad.borrow().get_fourth()?.set_f32(median);
         }
-        try!(self.output.raw.send(raw_msg));
+        self.output.raw.send(raw_msg)?;
 
-        let (min, max, average, median): (u32, u32, u32, f32) = try!(process_data(try!(self.input.anonymous.recv())));
+        let (min, max, average, median): (u32, u32, u32, f32) = process_data(self.input.anonymous.recv()?)?;
         let mut anonymous_msg = Msg::new();
         {
-            let mut quad = anonymous_msg.build_schema::<quadruple::Builder>();
-            quad.set_first(min);
-            quad.set_second(max);
-            quad.set_third(average);
-            quad.set_fourth(median);
+            let mut quad = anonymous_msg.build_schema::<ntuple_quadruple_u32u32u32f32::Builder>();
+            quad.borrow().get_first()?.set_u32(min);
+            quad.borrow().get_second()?.set_u32(max);
+            quad.borrow().get_third()?.set_u32(average);
+            quad.borrow().get_fourth()?.set_f32(median);
         }
-        try!(self.output.anonymous.send(anonymous_msg));
+        self.output.anonymous.send(anonymous_msg)?;
         Ok(End)
     }
 }
