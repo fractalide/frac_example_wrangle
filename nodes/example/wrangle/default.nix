@@ -17,13 +17,13 @@
   in
   subgraph {
     src = ./.;
-    edges = with edges; [ list_ntuple_triple_ttt path ];
+    edges = with edges; [ ntup_list_triple_ttt fs_path ];
     flowscript = with nodes; with edges; ''
-   '${list_ntuple_triple_ttt}:(list = [])' -> accumulator aggr_triples(${example_wrangle_aggregate})
+   '${ntup_list_triple_ttt}:(list = [])' -> accumulator aggr_triples(${example_wrangle_aggregate})
 
-   '${path}:(path="${example-data}/data")' ->
-   input list_dir(${fs_dir_list}) output ->
-   input split(${dt_vector_split_by_outarr_count}) output[0] ->
+   '${fs_path}:(path="${example-data}/data")' ->
+   input list_dir(${fs_list_dir}) output ->
+   input split(${example_wrangle_dt_vector_split_by_outarr_count}) output[0] ->
    input procchunk0(${example_wrangle_processchunk}) output -> input[0] aggr_triples()
    split() output[1] -> input procchunk1(${example_wrangle_processchunk}) output -> input[1] aggr_triples()
    split() output[2] -> input procchunk2(${example_wrangle_processchunk}) output -> input[2] aggr_triples()

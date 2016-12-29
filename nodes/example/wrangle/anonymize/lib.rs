@@ -5,11 +5,11 @@ extern crate capnp;
 use std::str::FromStr;
 
 agent! {
-    input(input: list_ntuple_triple_ttt),
-    output(output: list_ntuple_triple_ttt),
+    input(input: ntup_list_triple_ttt),
+    output(output: ntup_list_triple_ttt),
     fn run(&mut self) -> Result<Signal> {
         let mut msg = try!(self.input.input.recv());
-        let anon_reader: list_ntuple_triple_ttt::Reader = try!(msg.read_schema());
+        let anon_reader: ntup_list_triple_ttt::Reader = try!(msg.read_schema());
         let to_anon_triple = try!(anon_reader.get_list());
 
         let mut anonymized_bean_counter = HashMap::new();
@@ -24,7 +24,7 @@ agent! {
         }
         let mut fin_msg = Msg::new();
         {
-            let ip = fin_msg.build_schema::<list_ntuple_triple_ttt::Builder>();
+            let ip = fin_msg.build_schema::<ntup_list_triple_ttt::Builder>();
             let mut fin_triple = ip.init_list(anonymized_bean_counter.len() as u32);
             let mut i :u32 = 0;
             for (key,val) in anonymized_bean_counter.iter() {

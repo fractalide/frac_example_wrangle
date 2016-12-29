@@ -5,26 +5,26 @@ extern crate capnp;
 use std::str::FromStr;
 
 agent! {
-    inarr(input: list_ntuple_triple_ttt),
-    output(output: list_ntuple_triple_ttt),
-    accumulator(list_ntuple_triple_ttt),
+    inarr(input: ntup_list_triple_ttt),
+    output(output: ntup_list_triple_ttt),
+    accumulator(ntup_list_triple_ttt),
     fn run(&mut self) -> Result<Signal> {
         for ins in self.inarr.input.values()
         {
             println!("Chunk completed!");
             let mut ip = ins.recv()?;
-            let list_triple_reader: list_ntuple_triple_ttt::Reader = ip.read_schema()?;
+            let list_triple_reader: ntup_list_triple_ttt::Reader = ip.read_schema()?;
             let list_triple = list_triple_reader.get_list()?;
 
             let mut ip_acc = self.input.accumulator.recv()?;
-            let acc_reader: list_ntuple_triple_ttt::Reader = try!(ip_acc.read_schema());
+            let acc_reader: ntup_list_triple_ttt::Reader = try!(ip_acc.read_schema());
             let acc_triple = acc_reader.get_list()?;
             let acc_length = acc_triple.len() as u32;
             let input_length = list_triple.len() as u32;
 
             let mut new_acc_msg = Msg::new();
             {
-                let ip = new_acc_msg.build_schema::<list_ntuple_triple_ttt::Builder>();
+                let ip = new_acc_msg.build_schema::<ntup_list_triple_ttt::Builder>();
                 let mut new_acc_triple = ip.init_list(acc_length + input_length);
                 let mut i :u32 = 0;
                 for i in 0..list_triple.len() {
@@ -48,7 +48,7 @@ agent! {
         }
 
         let mut ip_acc = self.input.accumulator.recv()?;
-        let acc_reader: list_ntuple_triple_ttt::Reader = ip_acc.read_schema()?;
+        let acc_reader: ntup_list_triple_ttt::Reader = ip_acc.read_schema()?;
         let acc_triple = acc_reader.get_list()?;
 
         let mut large_sized_bean_counter = HashMap::new();
@@ -59,7 +59,7 @@ agent! {
 
         let mut fin_msg = Msg::new();
         {
-            let ip = fin_msg.build_schema::<list_ntuple_triple_ttt::Builder>();
+            let ip = fin_msg.build_schema::<ntup_list_triple_ttt::Builder>();
             let mut fin_triple = ip.init_list(large_sized_bean_counter.len() as u32);
             let first = try!(acc_triple.get(0).get_first()?.get_text());
             let mut i :u32 = 0;

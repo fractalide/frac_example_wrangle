@@ -9,7 +9,7 @@ use std::str::FromStr;
 
 fn process_data(mut msg: rustfbp::ports::Msg) -> Result<(u32,u32,u32,f32)>
 {
-    let data_reader: list_ntuple_triple_ttt::Reader = msg.read_schema()?;
+    let data_reader: ntup_list_triple_ttt::Reader = msg.read_schema()?;
     let data = data_reader.get_list()?;
     let stats_length = data.len();
     let mut total :u32 = 0;
@@ -36,13 +36,13 @@ fn process_data(mut msg: rustfbp::ports::Msg) -> Result<(u32,u32,u32,f32)>
 }
 
 agent! {
-    input(raw: list_ntuple_triple_ttt, anonymous: list_ntuple_triple_ttt),
-    output(raw: ntuple_quadruple_u32u32u32f32, anonymous: ntuple_quadruple_u32u32u32f32),
+    input(raw: ntup_list_triple_ttt, anonymous: ntup_list_triple_ttt),
+    output(raw: ntup_quadruple_u32u32u32f32, anonymous: ntup_quadruple_u32u32u32f32),
     fn run(&mut self) -> Result<Signal> {
         let (min, max, average, median): (u32, u32, u32, f32) = process_data(self.input.raw.recv()?)?;
         let mut raw_msg = Msg::new();
         {
-            let mut quad = raw_msg.build_schema::<ntuple_quadruple_u32u32u32f32::Builder>();
+            let mut quad = raw_msg.build_schema::<ntup_quadruple_u32u32u32f32::Builder>();
             quad.borrow().get_first()?.set_u32(min);
             quad.borrow().get_second()?.set_u32(max);
             quad.borrow().get_third()?.set_u32(average);
@@ -53,7 +53,7 @@ agent! {
         let (min, max, average, median): (u32, u32, u32, f32) = process_data(self.input.anonymous.recv()?)?;
         let mut anonymous_msg = Msg::new();
         {
-            let mut quad = anonymous_msg.build_schema::<ntuple_quadruple_u32u32u32f32::Builder>();
+            let mut quad = anonymous_msg.build_schema::<ntup_quadruple_u32u32u32f32::Builder>();
             quad.borrow().get_first()?.set_u32(min);
             quad.borrow().get_second()?.set_u32(max);
             quad.borrow().get_third()?.set_u32(average);

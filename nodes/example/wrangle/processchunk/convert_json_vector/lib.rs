@@ -16,19 +16,19 @@ struct Purchases {
 }
 
 agent! {
-    input(input: value_string),
-    output(output: list_ntuple_tuple_tt),
+    input(input: prim_text),
+    output(output: ntup_list_tuple_tt),
     fn run(&mut self) -> Result<Signal> {
         let mut ip = self.input.input.recv()?;
-        let value: value_string::Reader = ip.read_schema()?;
-        let value = value.get_value()?;
+        let value: prim_text::Reader = ip.read_schema()?;
+        let value = value.get_text()?;
         if value != "end" {
             if value.contains("type") {
                 let purchases: Purchases = json::decode(value.replace("type", "thetype").as_str()).unwrap();
                 let purchases = Purchases {purchases:  purchases.purchases};
                 let mut new_msg = Msg::new();
                 {
-                    let ip = new_msg.build_schema::<list_ntuple_tuple_tt::Builder>();
+                    let ip = new_msg.build_schema::<ntup_list_tuple_tt::Builder>();
                     let mut tuples = ip.init_list(purchases.purchases.len() as u32);
                     let mut i: u32 = 0;
                     for tuple in &purchases.purchases {
@@ -41,7 +41,7 @@ agent! {
             }else {
                 let mut empty_msg = Msg::new();
                 {
-                    let ip = empty_msg.build_schema::<list_ntuple_tuple_tt::Builder>();
+                    let ip = empty_msg.build_schema::<ntup_list_tuple_tt::Builder>();
                     let mut tuples = ip.init_list(1);
                     tuples.borrow().get(0).get_first()?.set_text("zero");
                     tuples.borrow().get(0).get_second()?.set_text("0");
@@ -51,7 +51,7 @@ agent! {
         } else {
             let mut end_ip = Msg::new();
             {
-                let ip = end_ip.build_schema::<list_ntuple_tuple_tt::Builder>();
+                let ip = end_ip.build_schema::<ntup_list_tuple_tt::Builder>();
                 let mut tuples = ip.init_list(1);
                 tuples.borrow().get(0).get_first()?.set_text("end");
             }

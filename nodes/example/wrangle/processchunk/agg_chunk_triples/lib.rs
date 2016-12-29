@@ -5,21 +5,21 @@ extern crate capnp;
 use std::str::FromStr;
 
 agent! {
-    input(input: list_ntuple_triple_ttt),
-    output(output: list_ntuple_triple_ttt, next : prim_text),
-    accumulator(list_ntuple_triple_ttt),
+    input(input: ntup_list_triple_ttt),
+    output(output: ntup_list_triple_ttt, next : prim_text),
+    accumulator(ntup_list_triple_ttt),
     fn run(&mut self) -> Result<Signal> {
         loop{
             let mut msg = self.input.input.recv()?;
-            let input_triple: list_ntuple_triple_ttt::Reader = msg.read_schema()?;
+            let input_triple: ntup_list_triple_ttt::Reader = msg.read_schema()?;
             let input_triple = input_triple.get_list()?;
             if input_triple.get(0).get_first()?.get_text()? == "end" {
                 let mut acc_msg = self.input.accumulator.recv()?;
-                let acc_reader: list_ntuple_triple_ttt::Reader = acc_msg.read_schema()?;
+                let acc_reader: ntup_list_triple_ttt::Reader = acc_msg.read_schema()?;
                 let acc_triple = acc_reader.get_list()?;
                 let mut feedback_ip = Msg::new();
                 {
-                    let ip = feedback_ip.build_schema::<list_ntuple_triple_ttt::Builder>();
+                    let ip = feedback_ip.build_schema::<ntup_list_triple_ttt::Builder>();
                     let mut feedback_list = ip.init_list(acc_triple.len() as u32);
                     let first = acc_triple.get(0).get_first()?.get_text()?;
                     for i in 0..feedback_list.len() {
@@ -32,14 +32,14 @@ agent! {
                 break;
             } else {
                 let mut acc_msg = self.input.accumulator.recv()?;
-                let acc_reader: list_ntuple_triple_ttt::Reader = acc_msg.read_schema()?;
+                let acc_reader: ntup_list_triple_ttt::Reader = acc_msg.read_schema()?;
                 let acc_triple = acc_reader.get_list()?;
                 let acc_length = acc_triple.len() as u32;
                 let input_length = input_triple.len() as u32;
                 if acc_length == 0 {
                     let mut acc_msg = Msg::new();
                     {
-                        let ip = acc_msg.build_schema::<list_ntuple_triple_ttt::Builder>();
+                        let ip = acc_msg.build_schema::<ntup_list_triple_ttt::Builder>();
                         let mut acc_triple = ip.init_list(input_length);
                         for i in 0..input_triple.len() {
                             acc_triple.borrow().get(i).get_first()?.set_text(input_triple.get(i).get_first()?.get_text()?);
@@ -74,7 +74,7 @@ agent! {
                     }
                     let mut new_acc_msg = Msg::new();
                     {
-                        let ip = new_acc_msg.build_schema::<list_ntuple_triple_ttt::Builder>();
+                        let ip = new_acc_msg.build_schema::<ntup_list_triple_ttt::Builder>();
                         let mut new_acc_triple = ip.init_list(medium_sized_bean_counter.len() as u32);
                         let first = acc_triple.get(0).get_first()?.get_text()?;
                         let mut i :u32 = 0;

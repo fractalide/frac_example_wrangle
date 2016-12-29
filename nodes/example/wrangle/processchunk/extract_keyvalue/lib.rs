@@ -3,15 +3,15 @@ extern crate rustfbp;
 extern crate capnp;
 
 agent! {
-    input(input: list_ntuple_tuple_tt),
-    output(output: list_ntuple_triple_ttt),
+    input(input: ntup_list_tuple_tt),
+    output(output: ntup_list_triple_ttt),
     option(prim_text),
     fn run(&mut self) -> Result<Signal> {
         let mut opt = self.recv_option();
         let extract_key: prim_text::Reader = opt.read_schema()?;
 
         let mut ip = self.input.input.recv()?;
-        let list_tuple: list_ntuple_tuple_tt::Reader = ip.read_schema()?;
+        let list_tuple: ntup_list_tuple_tt::Reader = ip.read_schema()?;
         let list_tuple = list_tuple.get_list()?;
 
         if list_tuple.get(0).get_first()?.get_text()? != "end" {
@@ -28,7 +28,7 @@ agent! {
             }
             let mut new_msg = Msg::new();
             {
-                let ip = new_msg.build_schema::<list_ntuple_triple_ttt::Builder>();
+                let ip = new_msg.build_schema::<ntup_list_triple_ttt::Builder>();
                 let mut triples = ip.init_list(small_sized_bean_counter.len() as u32);
                 let mut i: u32 = 0;
                 for (key, val) in small_sized_bean_counter.iter() {
@@ -42,7 +42,7 @@ agent! {
         } else {
             let mut end_msg = Msg::new();
             {
-                let ip = end_msg.build_schema::<list_ntuple_triple_ttt::Builder>();
+                let ip = end_msg.build_schema::<ntup_list_triple_ttt::Builder>();
                 let mut triples = ip.init_list(1);
                 triples.borrow().get(0).get_first()?.set_text("end");
             }

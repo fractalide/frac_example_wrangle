@@ -1,8 +1,8 @@
 { agent, edges, crates, pkgs }:
 
-agent {
+agent  {
   src = ./.;
-  edges = with edges; [ ntup_list_tuple_tt ntup_list_triple_ttt prim_text ];
+  edges = with edges; [ fs_list_path ];
   crates = with crates; [ rustfbp capnp ];
   osdeps = with pkgs; [];
 }
