@@ -2,7 +2,6 @@
 
 subgraph {
   src = ./.;
-  edges = with edges; [ prim_text ntup_list_triple_ttt ];
   flowscript = with nodes; with edges; ''
   '${prim_text}:(text="airline")' -> option extract_kvs(${example_wrangle_processchunk_extract_keyvalue})
   '${ntup_list_triple_ttt}:(list = [])' -> accumulator aggregate_triples(${example_wrangle_processchunk_agg_chunk_triples})

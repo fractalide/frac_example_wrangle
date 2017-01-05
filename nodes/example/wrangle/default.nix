@@ -17,7 +17,6 @@
   in
   subgraph {
     src = ./.;
-    edges = with edges; [ ntup_list_triple_ttt fs_path ];
     flowscript = with nodes; with edges; ''
    '${ntup_list_triple_ttt}:(list = [])' -> accumulator aggr_triples(${example_wrangle_aggregate})
 
