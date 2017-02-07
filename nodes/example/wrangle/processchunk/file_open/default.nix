@@ -2,7 +2,7 @@
 
 agent {
   src = ./.;
-  edges = with edges; [ prim_text fs_path fs_file_error ];
+  edges = with edges; [ PrimText FsPath FsFileError ];
   crates = with crates; [ rustfbp capnp ];
   osdeps = with pkgs; [];
 }

@@ -1,10 +1,13 @@
-{ subgraph, nodes, edges }:
+{ subgraph, imsgs, nodes, edges }:
 
-subgraph {
+subgraph rec {
   src = ./.;
-  flowscript = with nodes; with edges; ''
-  '${prim_text}:(text="airline")' -> option extract_kvs(${example_wrangle_processchunk_extract_keyvalue})
-  '${ntup_list_triple_ttt}:(list = [])' -> accumulator aggregate_triples(${example_wrangle_processchunk_agg_chunk_triples})
+  imsg = imsgs {
+    edges = with edges; [ PrimText NtupListTripleTtt];
+  };
+  flowscript = with nodes; ''
+  '${imsg}.PrimText:(text="airline")' -> option extract_kvs(${example_wrangle_processchunk_extract_keyvalue})
+  '${imsg}.NtupListTripleTtt:(list = [])' -> accumulator aggregate_triples(${example_wrangle_processchunk_agg_chunk_triples})
 
   input => input iterate_paths(${example_wrangle_processchunk_iterate_paths}) output ->
     input open_file(${example_wrangle_processchunk_file_open}) output ->

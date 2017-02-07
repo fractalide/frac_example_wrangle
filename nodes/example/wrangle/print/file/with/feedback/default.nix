@@ -2,7 +2,7 @@
 
 agent {
   src = ./.;
-  edges = with edges; [ value_string list_triple];
+  edges = with edges; [ ValueString ListTriple];
   crates = with crates; [ rustfbp capnp ];
   osdeps = with pkgs; [];
 }

@@ -2,7 +2,7 @@
 
 agent {
   src = ./.;
-  edges = with edges; [ ntup_list_tuple_tt prim_text ntup_list_triple_ttt ];
+  edges = with edges; [ NtupListTupleTt PrimText NtupListTripleTtt ];
   crates = with crates; [ rustfbp capnp ];
   osdeps = with pkgs; [];
 }
