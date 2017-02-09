@@ -1,4 +1,4 @@
-{ subgraph, imsgs, nodes, edges, pkgs }:
+{ subgraph, imsg, nodes, edges, pkgs }:
 
   let
   example-data = pkgs.stdenv.mkDerivation rec {
@@ -14,17 +14,20 @@
     mv example_data-master-*/data $out
     '';
   };
+  NtupListTripleTtt = imsg {
+    class = edges.NtupListTripleTtt;
+    text = ''(list = [])'';
+  };
+  FsPath = imsg {
+    class = edges.FsPath;
+    text = ''(path="${example-data}/data")'';
+  };
   in
-  subgraph rec {
+  subgraph {
     src = ./.;
-    imsg = imsgs {
-      edges = with edges; [ NtupListTripleTtt FsPath ];
-    };
-    flowscript = with nodes; with edges; ''
-   '${imsg}.NtupListTripleTtt:(list = [])' -> accumulator aggr_triples(${example_wrangle_aggregate})
-
-   '${imsg}.FsPath:(path="${example-data}/data")' ->
-   input list_dir(${fs_list_dir}) output ->
+    flowscript = with nodes; ''
+   '${NtupListTripleTtt}' -> accumulator aggr_triples(${example_wrangle_aggregate})
+   '${FsPath}' -> input list_dir(${fs_list_dir}) output ->
    input split(${example_wrangle_dt_vector_split_by_outarr_count}) output[0] ->
    input procchunk0(${example_wrangle_processchunk}) output -> input[0] aggr_triples()
    split() output[1] -> input procchunk1(${example_wrangle_processchunk}) output -> input[1] aggr_triples()
