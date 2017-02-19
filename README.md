@@ -15,7 +15,7 @@ Example app that uses most of Fractalide's features.
 ## Build Instructions
 Ensure you've installed [nix](https://nixos.org/nix).
 ```
-$ export NIX_PATH+=:fractalide=https://github.com/fractalide/fractalide/archive/v20170218.tar.gz
+$ export NIX_PATH+=:fractalide=https://github.com/fractalide/fractalide/archive/v20170220.tar.gz
 $ git clone git://github.com/fractalide/example_wrangle.git
 $ cd example_wrangle
 $ nix-build --argstr rs test
